@@ -1,0 +1,30 @@
+import json
+import boto3
+
+
+def lambda_handler(event, context):
+    # TODO implement
+    print(event)
+    s3 = boto3.client('s3') 
+    bucket = event['detail']['requestParameters']['bucketName']
+    key = event['detail']['requestParameters']['key']
+    region = event['region']
+    Downloadtime = event['time']
+    response = s3.head_object(Bucket=bucket, Key=key) 
+    size = response['ContentLength']
+    MY_SNS_TOPIC_ARN = 'arn:aws:sns:ap-south-1:335720930683:notifyme'
+    sns_client = boto3.client('sns')
+    if size > 1024:
+        sns_client.publish(
+        TopicArn = MY_SNS_TOPIC_ARN,
+        Subject = 'File ' + key + ' size exceeded allowable limit',
+        Message = 'The below file is exceeded by limit of 1GB\n' +
+                  'Bucket: ' + bucket + '\n' +
+                  'Region: ' + region + '\n' +
+                  'File Name: ' + key + '\n' +
+                  'Download time: ' + Downloadtime + '\n' +
+                  'File size in bytes: ' + str(size) + '\n'
+     )
+        
+    else:
+        print('size is smaller than 1024')
