@@ -12,7 +12,7 @@ def lambda_handler(event, context):
     Downloadtime = event['time']
     response = s3.head_object(Bucket=bucket, Key=key) 
     size = response['ContentLength']
-    MY_SNS_TOPIC_ARN = 'arn:aws:sns:ap-south-1:335720930683:notifyme'
+    MY_SNS_TOPIC_ARN = '*****************************************'//Keep your SNS arn here
     sns_client = boto3.client('sns')
     if size > 1024:
         sns_client.publish(
